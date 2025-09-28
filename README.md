@@ -1,7 +1,7 @@
 # task4-sql-analysis
 I chose an e-commerce dataset to work with. MySQL was used for data cleaning and analysis. 
 <br>
-link to the dataset()
+[link to the dataset](https://www.kaggle.com/datasets/mervemenekse/ecommerce-dataset)
 <br>
 **About the dataset:**
 <br>
