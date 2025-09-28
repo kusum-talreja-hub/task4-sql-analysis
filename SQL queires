@@ -1,4 +1,5 @@
-USE elevatelabs; #adding table to schema
+ # adding table to schema
+USE elevatelabs;
 LOAD DATA LOCAL INFILE 'C:/Users/talre/Downloads/datasets/E-commerce csv.csv'
     INTO TABLE ecom
     FIELDS TERMINATED BY ','
@@ -8,8 +9,8 @@ LOAD DATA LOCAL INFILE 'C:/Users/talre/Downloads/datasets/E-commerce csv.csv'
     SELECT*
     FROM ecom
     LIMIT 10;
-<br>
-<br>
+
+
    # looking for outliers
     SELECT aging
     FROM ecom
@@ -29,15 +30,14 @@ LOAD DATA LOCAL INFILE 'C:/Users/talre/Downloads/datasets/E-commerce csv.csv'
         SELECT shipping_cost
     FROM ecom
     ORDER BY shipping_cost DESC;
-<br>
-<br>
-#checking for null numerical values
+
+
+# checking for null numerical values
         SELECT *
     FROM ecom
 WHERE aging = 0 OR sales = 0 OR quantity = 0 OR DISCOUNT = 0 OR PROFIT = 0 OR SHIPPING_COST = 0;
-<br>
-<br>
-#checking for null string vaues
+
+# CHECKING FOR NULL VALUES
         SELECT DISTINCT *
     FROM ecom
 WHERE aging = 0 OR sales = 0 OR quantity = 0 OR DISCOUNT = 0 OR PROFIT = 0 OR SHIPPING_COST = 0;
@@ -45,22 +45,24 @@ SELECT DISTINCT *
     FROM ecom
 WHERE order_date = "" OR time = "" OR customer_id = "" OR gender = "" OR device_type = "" OR customer_login_type = "" OR product_category = "" OR product = "" OR order_priority = "" OR payment_method = "";
 # AGING, QUANTITY, SALES, DISCOUNT AND SHIPPING COST HAVE NULL VALUES
-#ORDER_PRIORITY HAS NULL VALUES
-<br>
-#dealing with null values
+# ORDER_PRIORITY HAS NULL VALUES
+
+# DEALING WITH NULL VALUES
 SET SQL_SAFE_UPDATES = 0;
 UPDATE ecom
-SET order_priority = 'Other', 
+SET order_priority = 'Other'
 WHERE order_priority = "";
+
 #FINDING THE ACTUAL VALUES OF NULL VALUES
 SELECT * FROM ecom WHERE quantity=1 AND product='Car Speakers' AND discount=0.1 AND profit= 124.7; #FOR 0 SALES
 SELECT * FROM ecom WHERE sales=72 AND product='Bike tyres' AND discount=0.1 AND profit= 36; #FOR 0 quantity
 SELECT * FROM ecom WHERE sales=54 AND product='Car Mat' AND discount=0.2 AND profit= 54; #FOR 0 quantity
 SELECT * FROM ecom WHERE sales=250 AND quantity=5 AND product='Tyre' AND profit= 132.5; #FOR 0 discount
 SELECT * FROM ecom WHERE sales=250 AND product='Tyre' AND discount=0.2 AND profit= 150; #FOR 0 shipping cost
-#UPDATING NULL VALUES
+
+# UPDATING NULL VALUES
 UPDATE ecom SET sales=211 WHERE sales=0;
-DELETE FROM ecom WHERE sales=72 AND product='Bike tyres' AND discount=0.1 AND profit= 36;
+DELETE FROM ecom WHERE quantity=O AND sales=72 AND product='Bike tyres' AND discount=0.1 AND profit= 36;
 UPDATE ecom SET quantity=1 WHERE sales=54 AND product='Car Mat' AND discount=0.2 AND profit= 54;
 UPDATE ecom SET discount=0.3 WHERE discount=0;
 UPDATE ecom SET shipping_cost=15 WHERE shipping_cost=0;
@@ -71,4 +73,6 @@ WHERE aging = 0 OR sales = 0 OR quantity = 0 OR DISCOUNT = 0 OR PROFIT = 0 OR SH
 SELECT DISTINCT *
     FROM ecom
 WHERE order_date = "" OR time = "" OR customer_id = "" OR gender = "" OR device_type = "" OR customer_login_type = "" OR product_category = "" OR product = "" OR order_priority = "" OR payment_method = "";
+COMMIT;
 
+#ANALYSIS BEGINS
