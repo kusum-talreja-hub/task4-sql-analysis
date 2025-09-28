@@ -10,7 +10,6 @@ LOAD DATA LOCAL INFILE 'C:/Users/talre/Downloads/datasets/E-commerce csv.csv'
     FROM ecom
     LIMIT 10;
 
-
    # looking for outliers
     SELECT aging
     FROM ecom
@@ -29,13 +28,7 @@ LOAD DATA LOCAL INFILE 'C:/Users/talre/Downloads/datasets/E-commerce csv.csv'
     ORDER BY profit DESC;
         SELECT shipping_cost
     FROM ecom
-    ORDER BY shipping_cost DESC;
-
-
-# checking for null numerical values
-        SELECT *
-    FROM ecom
-WHERE aging = 0 OR sales = 0 OR quantity = 0 OR DISCOUNT = 0 OR PROFIT = 0 OR SHIPPING_COST = 0;
+    ORDER BY shipping_cost DESC;.
 
 # CHECKING FOR NULL VALUES
         SELECT DISTINCT *
@@ -53,7 +46,7 @@ UPDATE ecom
 SET order_priority = 'Other'
 WHERE order_priority = "";
 
-#FINDING THE ACTUAL VALUES OF NULL VALUES
+# FINDING THE ACTUAL VALUES OF NULL VALUES
 SELECT * FROM ecom WHERE quantity=1 AND product='Car Speakers' AND discount=0.1 AND profit= 124.7; #FOR 0 SALES
 SELECT * FROM ecom WHERE sales=72 AND product='Bike tyres' AND discount=0.1 AND profit= 36; #FOR 0 quantity
 SELECT * FROM ecom WHERE sales=54 AND product='Car Mat' AND discount=0.2 AND profit= 54; #FOR 0 quantity
@@ -75,4 +68,79 @@ SELECT DISTINCT *
 WHERE order_date = "" OR time = "" OR customer_id = "" OR gender = "" OR device_type = "" OR customer_login_type = "" OR product_category = "" OR product = "" OR order_priority = "" OR payment_method = "";
 COMMIT;
 
-#ANALYSIS BEGINS
+# ANALYSIS
+# total customers SELECT COUNT(DISTINCT customer_id) FROM ecom;
+
+# most used device type for orders
+SELECT 
+    ( (SELECT COUNT(*) FROM ecom WHERE device_type = 'web') * 100.0 / COUNT(*)) AS percentage_web
+FROM ecom;
+SELECT 
+    ( (SELECT COUNT(*) FROM ecom WHERE device_type = 'mobile') * 100.0 / COUNT(*)) AS percentage_mobile
+FROM ecom;
+
+# gender, customer type, device_type
+# if customer is a member or not
+WITH distinct_customers AS (
+    SELECT *
+    FROM (
+        SELECT ecom.*,
+               ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date) AS rn
+        FROM ecom
+    ) t
+    WHERE rn = 1
+    )
+SELECT 
+    customer_login_type,
+    COUNT(*) AS total_customers,
+    (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM distinct_customers)) AS percentage 
+FROM distinct_customers
+GROUP BY customer_login_type
+ORDER BY percentage DESC;
+
+#gender
+SELECT 
+    gender,
+    COUNT(*) AS total_customers,
+    (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM distinct_customers)) AS percentage
+FROM distinct_customers
+GROUP BY gender
+ORDER BY percentage DESC;
+
+# popular payment method
+SELECT 
+   payment_method,
+    COUNT(*) AS total_orders,
+    (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM ecom)) AS percentage
+FROM ecom
+GROUP BY payment_method
+ORDER BY percentage DESC;
+
+# most selling product category
+SELECT 
+    product_category,
+    COUNT(*) AS total_orders,
+    (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM ecom)) AS percentage
+FROM ecom
+GROUP BY product_category
+ORDER BY percentage DESC;
+
+# most sold product for each category
+SELECT 
+    product,
+    COUNT(*) AS total_orders,
+    (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM ecom)) AS percentage
+FROM ecom
+GROUP BY product
+ORDER BY percentage DESC;
+
+# profit by category
+SELECT 
+    product_category,
+    SUM(profit) AS total_profit
+FROM ecom
+GROUP BY product_category
+ORDER BY product_category DESC:
+
+# total profit
+SELECT SUM(PROFIT) FROM ecom
