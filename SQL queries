@@ -69,9 +69,19 @@ WHERE order_date = "" OR time = "" OR customer_id = "" OR gender = "" OR device_
 COMMIT;
 
 # ANALYSIS
-# total customers SELECT COUNT(DISTINCT customer_id) FROM ecom;
+# total customers 
+SELECT COUNT(DISTINCT customer_id) FROM ecom;
 
-# most used device type for orders
+# gender
+SELECT 
+    gender,
+    COUNT(*) AS total_customers,
+    (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM distinct_customers)) AS percentage
+FROM distinct_customers
+GROUP BY gender
+ORDER BY percentage DESC;
+
+# device type
 SELECT 
     ( (SELECT COUNT(*) FROM ecom WHERE device_type = 'web') * 100.0 / COUNT(*)) AS percentage_web
 FROM ecom;
@@ -79,8 +89,16 @@ SELECT
     ( (SELECT COUNT(*) FROM ecom WHERE device_type = 'mobile') * 100.0 / COUNT(*)) AS percentage_mobile
 FROM ecom;
 
-# gender, customer type, device_type
-# if customer is a member or not
+# payment method
+SELECT 
+   payment_method,
+    COUNT(*) AS total_orders,
+    (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM ecom)) AS percentage
+FROM ecom
+GROUP BY payment_method
+ORDER BY percentage DESC;
+
+# customer type
 WITH distinct_customers AS (
     SELECT *
     FROM (
@@ -93,27 +111,9 @@ WITH distinct_customers AS (
 SELECT 
     customer_login_type,
     COUNT(*) AS total_customers,
-    (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM distinct_customers)) AS percentage 
-FROM distinct_customers
-GROUP BY customer_login_type
-ORDER BY percentage DESC;
-
-#gender
-SELECT 
-    gender,
-    COUNT(*) AS total_customers,
     (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM distinct_customers)) AS percentage
 FROM distinct_customers
-GROUP BY gender
-ORDER BY percentage DESC;
-
-# popular payment method
-SELECT 
-   payment_method,
-    COUNT(*) AS total_orders,
-    (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM ecom)) AS percentage
-FROM ecom
-GROUP BY payment_method
+GROUP BY customer_login_type
 ORDER BY percentage DESC;
 
 # most selling product category
@@ -125,7 +125,7 @@ FROM ecom
 GROUP BY product_category
 ORDER BY percentage DESC;
 
-# most sold product for each category
+# most sold product
 SELECT 
     product,
     COUNT(*) AS total_orders,
@@ -140,7 +140,7 @@ SELECT
     SUM(profit) AS total_profit
 FROM ecom
 GROUP BY product_category
-ORDER BY product_category DESC:
+ORDER BY product_category DESC;
 
 # total profit
 SELECT SUM(PROFIT) FROM ecom
